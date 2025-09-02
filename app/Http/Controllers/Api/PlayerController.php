@@ -162,21 +162,7 @@ class PlayerController extends Controller
         $type = $request->input('type');
         $limit = min($request->input('limit', 10), 50);
 
-        $query = Player::query();
-
-        switch ($type) {
-            case 'level':
-                $query->orderBy('level', 'desc')->orderBy('exp', 'desc');
-                break;
-            case 'gold':
-                $query->orderBy('gold', 'desc');
-                break;
-            case 'playtime':
-                $query->orderBy('playtime', 'desc');
-                break;
-        }
-
-        $players = $query->with('guild')->limit($limit)->get();
+        $players = \App\Services\CacheService::topPlayers($type, $limit);
 
         return response()->json(['data' => $players]);
     }

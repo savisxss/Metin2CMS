@@ -12,31 +12,31 @@ Route::middleware(['api', 'rate_limit:api'])->group(function () {
     
     // Server endpoints
     Route::prefix('server')->group(function () {
-        Route::get('/status', [ServerController::class, 'status']);
-        Route::get('/statistics', [ServerController::class, 'statistics']);
-        Route::get('/rates', [ServerController::class, 'rates']);
+        Route::get('/status', [ServerController::class, 'status'])->middleware('cache.response:300');
+        Route::get('/statistics', [ServerController::class, 'statistics'])->middleware('cache.response:600');
+        Route::get('/rates', [ServerController::class, 'rates'])->middleware('cache.response:3600');
         Route::get('/ping', [ServerController::class, 'ping']);
     });
     
     // Players endpoints
     Route::prefix('players')->group(function () {
-        Route::get('/', [PlayerController::class, 'index']);
-        Route::get('/top', [PlayerController::class, 'top']);
-        Route::get('/{player}', [PlayerController::class, 'show']);
+        Route::get('/', [PlayerController::class, 'index'])->middleware('cache.response:60');
+        Route::get('/top', [PlayerController::class, 'top'])->middleware('cache.response:600');
+        Route::get('/{player}', [PlayerController::class, 'show'])->middleware('cache.response:300');
     });
     
     // Guilds endpoints
     Route::prefix('guilds')->group(function () {
-        Route::get('/', [GuildController::class, 'index']);
-        Route::get('/top', [GuildController::class, 'top']);
-        Route::get('/{guild}', [GuildController::class, 'show']);
+        Route::get('/', [GuildController::class, 'index'])->middleware('cache.response:60');
+        Route::get('/top', [GuildController::class, 'top'])->middleware('cache.response:600');
+        Route::get('/{guild}', [GuildController::class, 'show'])->middleware('cache.response:300');
     });
     
     // News endpoints
     Route::prefix('news')->group(function () {
-        Route::get('/', [NewsController::class, 'index']);
-        Route::get('/featured', [NewsController::class, 'featured']);
-        Route::get('/{id}', [NewsController::class, 'show']);
+        Route::get('/', [NewsController::class, 'index'])->middleware('cache.response:300');
+        Route::get('/featured', [NewsController::class, 'featured'])->middleware('cache.response:1800');
+        Route::get('/{id}', [NewsController::class, 'show'])->middleware('cache.response:1800');
     });
 });
 

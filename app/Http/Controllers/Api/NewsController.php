@@ -215,27 +215,8 @@ class NewsController extends Controller
         ]);
 
         $limit = min($request->input('limit', 5), 10);
+        $articles = \App\Services\CacheService::featuredNews($limit);
 
-        $articles = DB::table('web_news')
-            ->where('is_published', true)
-            ->where('is_featured', true)
-            ->where('published_at', '<=', now())
-            ->orderBy('published_at', 'desc')
-            ->limit($limit)
-            ->get();
-
-        $data = $articles->map(function ($article) {
-            return [
-                'id' => $article->id,
-                'title' => $article->title,
-                'slug' => $article->slug,
-                'excerpt' => $article->excerpt,
-                'image' => $article->image,
-                'published_at' => $article->published_at,
-                'tags' => json_decode($article->tags, true) ?? [],
-            ];
-        });
-
-        return response()->json(['data' => $data]);
+        return response()->json(['data' => $articles]);
     }
 }

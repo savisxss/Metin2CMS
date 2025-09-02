@@ -90,6 +90,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Schema::defaultStringLength(191);
+
+        // Register model observers
+        \App\Models\Player::observe(\App\Observers\PlayerObserver::class);
+        \App\Models\Guild::observe(\App\Observers\GuildObserver::class);
     }
 }
 

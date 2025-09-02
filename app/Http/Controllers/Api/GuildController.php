@@ -166,18 +166,7 @@ class GuildController extends Controller
         $type = $request->input('type');
         $limit = min($request->input('limit', 10), 50);
 
-        $query = Guild::query();
-
-        switch ($type) {
-            case 'ladder':
-                $query->orderBy('ladder_point', 'desc')->orderBy('level', 'desc');
-                break;
-            case 'level':
-                $query->orderBy('level', 'desc')->orderBy('exp', 'desc');
-                break;
-        }
-
-        $guilds = $query->with('master')->limit($limit)->get();
+        $guilds = \App\Services\CacheService::topGuilds($type, $limit);
 
         return response()->json(['data' => $guilds]);
     }

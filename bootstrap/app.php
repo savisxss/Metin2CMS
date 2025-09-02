@@ -56,6 +56,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'signed' => \App\Http\Middleware\ValidateSignature::class,
             'rate_limit' => \App\Http\Middleware\RateLimitMiddleware::class,
             'security' => \App\Http\Middleware\SecurityHeaders::class,
+            'cache.response' => \App\Http\Middleware\CacheResponse::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
