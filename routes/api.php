@@ -5,41 +5,73 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PlayerController;
 use App\Http\Controllers\Api\GuildController;
 use App\Http\Controllers\Api\NewsController;
+use App\Http\Controllers\Api\ServerController;
+use App\Http\Controllers\Api\AccountController;
 
-Route::middleware(['api', 'throttle:api'])->group(function () {
+Route::middleware(['api', 'rate_limit:api'])->group(function () {
     
-    // Public API routes
-    Route::get('/players', [PlayerController::class, 'index']);
-    Route::get('/players/{player}', [PlayerController::class, 'show']);
+    // Server endpoints
+    Route::prefix('server')->group(function () {
+        Route::get('/status', [ServerController::class, 'status']);
+        Route::get('/statistics', [ServerController::class, 'statistics']);
+        Route::get('/rates', [ServerController::class, 'rates']);
+        Route::get('/ping', [ServerController::class, 'ping']);
+    });
     
-    Route::get('/guilds', [GuildController::class, 'index']);
-    Route::get('/guilds/{guild}', [GuildController::class, 'show']);
+    // Players endpoints
+    Route::prefix('players')->group(function () {
+        Route::get('/', [PlayerController::class, 'index']);
+        Route::get('/top', [PlayerController::class, 'top']);
+        Route::get('/{player}', [PlayerController::class, 'show']);
+    });
     
-    Route::get('/news', [NewsController::class, 'index']);
-    Route::get('/news/{news}', [NewsController::class, 'show']);
+    // Guilds endpoints
+    Route::prefix('guilds')->group(function () {
+        Route::get('/', [GuildController::class, 'index']);
+        Route::get('/top', [GuildController::class, 'top']);
+        Route::get('/{guild}', [GuildController::class, 'show']);
+    });
     
-    // Server status
-    Route::get('/status', function () {
-        return response()->json([
-            'status' => 'online',
-            'players_online' => cache()->remember('players_online', 60, function () {
-                return random_int(50, 200); // Replace with actual query
-            }),
-            'timestamp' => now()->toISOString()
-        ]);
+    // News endpoints
+    Route::prefix('news')->group(function () {
+        Route::get('/', [NewsController::class, 'index']);
+        Route::get('/featured', [NewsController::class, 'featured']);
+        Route::get('/{id}', [NewsController::class, 'show']);
     });
 });
 
 // Protected API routes
-Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
+Route::middleware(['auth:sanctum', 'rate_limit:api'])->group(function () {
+    // User info
     Route::get('/user', function (Request $request) {
-        return $request->user();
+        return response()->json([
+            'data' => $request->user()->load('account')
+        ]);
+    });
+    
+    // Account management
+    Route::prefix('account')->group(function () {
+        Route::get('/', [AccountController::class, 'show']);
+        Route::patch('/', [AccountController::class, 'update']);
+        Route::post('/change-password', [AccountController::class, 'changePassword']);
+        Route::get('/donations', [AccountController::class, 'donations']);
     });
     
     // Admin routes
     Route::middleware(['role:admin'])->prefix('admin')->group(function () {
-        Route::apiResource('players', PlayerController::class)->except(['index', 'show']);
-        Route::apiResource('guilds', GuildController::class)->except(['index', 'show']);
-        Route::apiResource('news', NewsController::class)->except(['index', 'show']);
+        // Player management
+        Route::post('/players', [PlayerController::class, 'store']);
+        Route::patch('/players/{player}', [PlayerController::class, 'update']);
+        Route::delete('/players/{player}', [PlayerController::class, 'destroy']);
+        
+        // Guild management
+        Route::post('/guilds', [GuildController::class, 'store']);
+        Route::patch('/guilds/{guild}', [GuildController::class, 'update']);
+        Route::delete('/guilds/{guild}', [GuildController::class, 'destroy']);
+        
+        // News management
+        Route::post('/news', [NewsController::class, 'store']);
+        Route::patch('/news/{id}', [NewsController::class, 'update']);
+        Route::delete('/news/{id}', [NewsController::class, 'destroy']);
     });
 });
