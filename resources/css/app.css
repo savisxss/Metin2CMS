@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    body {
+        @apply font-sans antialiased bg-gray-50 text-gray-900;
+    }
+}
+
+@layer components {
+    .btn {
+        @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+    }
+    
+    .btn-primary {
+        @apply btn bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500;
+    }
+    
+    .btn-secondary {
+        @apply btn bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500;
+    }
+    
+    .btn-success {
+        @apply btn bg-green-600 text-white hover:bg-green-700 focus:ring-green-500;
+    }
+    
+    .btn-danger {
+        @apply btn bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
+    }
+    
+    .card {
+        @apply bg-white rounded-lg shadow-sm border border-gray-200;
+    }
+    
+    .card-header {
+        @apply px-6 py-4 border-b border-gray-200 font-semibold text-gray-800;
+    }
+    
+    .card-body {
+        @apply px-6 py-4;
+    }
+    
+    .metin-gradient {
+        @apply bg-gradient-to-r from-metin-bronze via-metin-gold to-metin-bronze;
+    }
+    
+    .metin-card {
+        @apply card bg-gradient-to-br from-gray-800 via-gray-900 to-black text-white border-metin-gold/20;
+    }
+    
+    .metin-text-gold {
+        @apply text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600;
+    }
+}
+
+@layer utilities {
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+    
+    .glass {
+        backdrop-filter: blur(10px);
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+}
